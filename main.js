@@ -4406,23 +4406,14 @@ const githubData = [
       }
     }
   ]
+  // console.log(githubData);
+// totalling number of Steve's commits
+  let totalCommits = 0;
 
-
-let numCommits = 0
-for (let i = 0; i < githubData.length; i++) {
-    let data = githubData[i].payload.commits
-
-    for (var c in data) {
-     numCommits = numCommits +1
+for (let i = 0; i < githubData.length; i++){
+   if ('commits' in githubData[i].payload){
+       const numCommits = githubData[i].payload.commits.length
+       totalCommits += numCommits
     }
-}
-  console.log(numCommits)
-  
-  
-
-  //   let numCommits = 0
-
-//   for (let i = 0; i < githubData.length; i++) {
-//       const allData = githubData[i].commits;
-//   }
-
+   }
+   console.log(totalCommits);
