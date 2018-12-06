@@ -4408,12 +4408,110 @@ const githubData = [
   ]
   // console.log(githubData);
 // totalling number of Steve's commits
-  let totalCommits = 0;
 
-for (let i = 0; i < githubData.length; i++){
-   if ('commits' in githubData[i].payload){
-       const numCommits = githubData[i].payload.commits.length
-       totalCommits += numCommits
+
+// for (let i = 0; i < githubData.length; i++){
+//    if ('commits' in githubData[i].payload){
+//        const numCommits = githubData[i].payload.commits.length
+//        totalCommits += numCommits
+//     }
+//    }
+//    console.log(totalCommits);
+
+// How many total commits were made in all of Steve's events?
+
+let commits = 0;
+githubData.forEach(steveEvent => {
+  if (steveEvent.type === "PushEvent") {
+  commits += steveEvent.payload.commits.length;
+  
+  }
+  
+})
+
+// How many of each event type are there? (PullRequestEvent, PushEvent, etc)
+// What are the event types? 
+let eventTypes = {
+  PushEvent: 0,
+  PullRequestEvent: 0,
+  IssueCommentEvent: 0,
+  DeleteEvent: 0, 
+  CreateEvent: 0
+
+}
+
+githubData.forEach(stevent => {
+  console.log(stevent.type);
+  //when this is going through the loop, it's going through the object that we set and evaluating each type and adding one. The keys in the object that you specify have to be spelled and capitalized as the keys youre trying to locate within the data set
+  eventTypes[stevent.type] += 1;
+})
+
+console.log(eventTypes)
+
+
+// List all Github users who submitted a pull request that was approved by Steve. what? how do I know who was approved by steve? anyone who's listed as a pull request event is approved.
+// payload -> pull_request -> user -> login
+let approvedUsers = [];
+
+// can I make sure I'm only adding a string to an array if it's not already in there?
+
+githubData.forEach(stevent => {
+  //check to see if the type is a pull request event
+  if (stevent.type === "PullRequestEvent") {
+    //if it is check to see if approved user array does NOT (! bang symbol = not) include user login list, then push to the approvedUser array
+
+    if (!approvedUsers.includes(stevent.payload.pull_request.user.login)) {
+      approvedUsers.push(stevent.payload.pull_request.user.login);
+      console.log(approvedUsers);
+
     }
-   }
-   console.log(totalCommits);
+  }
+  
+})
+
+// List all repositories on which Steve had an event, and show how many events were on each one. how to target repos? deeper nested repos are forked repos (choose to ignore those). solve similarly to how we counted event types
+
+let reposEvents = {
+"​​​​​nashville-software-school/bangazon-llc​​​​​": 0,
+"​​​​​nss-day-cohort-27/brenda-snack-cake-store​​​​​": 0, 
+"nashville-software-school/client-side-mastery": 0,
+"stevebrownlee/vps-setup​​​​​": 0
+}
+
+githubData.forEach(eventObject => {
+  reposEvents[eventObject.repo.name] ++; 
+})
+
+
+
+// // Which event had the most number of commits?
+// objects with specific event as key and commits.length
+let eventsCommits = {}
+
+githubData.forEach(githubEvent => {
+  if (githubEvent.type === "PushEvent") {
+    console.log("The event id", githubEvent.id, "commits length", githubEvent.payload.commits.length )
+
+    eventsCommits[githubEvent.id] = githubEvent.payload.commits.length;
+  }
+})
+
+console.log('events and their commits', eventsCommits)
+
+
+// Which programming langugages were affected by Steve's events?
+// What programming language was the most affected by Steve's events?
+//  --where do the languages live/where are they nested? payload --> pull_request -> head -> repo -> language
+let eventLanguage = {
+  "JavaScript" : 0,
+  "Python": 0
+};
+githubData.forEach(stevent => {
+  if (stevent.type === "PullRequestEvent") {
+    console.log(stevent.payload.pull_request.head.repo.language);
+    eventLanguage[stevent.payload.pull_request.head.repo.language] ++;
+  }
+  
+})
+
+console.log(eventLanguage);
